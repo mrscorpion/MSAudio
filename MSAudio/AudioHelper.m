@@ -1,9 +1,9 @@
 //
 //  AudioHelper.m
-//  K歌卡路里
+//  MSAudio
 //
-//  Created by amber on 15/1/15.
-//  Copyright (c) 2015年 amber. All rights reserved.
+//  Created by mr.scorpion on 2016/10/19.
+//  Copyright © 2016年 mr.scorpion. All rights reserved.
 //
 
 #import "AudioHelper.h"
@@ -12,12 +12,13 @@
 #import <UIKit/UIKit.h>
 
 @implementation AudioHelper
-
-- (BOOL)hasMicphone {
+- (BOOL)hasMicphone
+{
     return [[AVAudioSession sharedInstance] inputIsAvailable];
 }
 
-- (BOOL)hasHeadset {
+- (BOOL)hasHeadset
+{
 #if TARGET_IPHONE_SIMULATOR
 #warning *** Simulator mode: audio session code works only on a device
     return NO;
@@ -26,10 +27,12 @@
     UInt32 propertySize = sizeof(CFStringRef);
     AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, (void*)route);
     
-    if((route == NULL) || (CFStringGetLength(route) == 0)){
+    if((route == NULL) || (CFStringGetLength(route) == 0))
+    {
         // Silent Mode
         NSLog(@"AudioRoute: SILENT, do nothing!");
-    } else {
+    }
+    else {
         NSString* routeStr = (__bridge NSString*)route;
         NSLog(@"AudioRoute: %@", routeStr);
         
@@ -43,7 +46,6 @@
          * "ReceiverAndMicrophone"
          * "Lineout"
          */
-        
         NSRange headphoneRange = [routeStr rangeOfString : @"Headphone"];
         NSRange headsetRange = [routeStr rangeOfString : @"Headset"];
         if (headphoneRange.location != NSNotFound) {
@@ -54,10 +56,10 @@
     }
     return NO;
 #endif
-    
 }
 
-- (void)resetOutputTarget {
+- (void)resetOutputTarget
+{
     BOOL hasHeadset = [self hasHeadset];
     NSLog (@"Will Set output target is_headset = %@ .", hasHeadset ? @"YES" : @"NO");
     UInt32 audioRouteOverride = hasHeadset ?
@@ -66,7 +68,8 @@ kAudioSessionOverrideAudioRoute_None:kAudioSessionOverrideAudioRoute_Speaker;
     [self hasHeadset];
 }
 
-- (BOOL)checkAndPrepareCategoryForRecording {
+- (BOOL)checkAndPrepareCategoryForRecording
+{
     recording = YES;
     BOOL hasMicphone = [self hasMicphone];
     NSLog(@"Will Set category for recording! hasMicophone = %@", hasMicphone?@"YES":@"NO");
@@ -78,7 +81,8 @@ kAudioSessionOverrideAudioRoute_None:kAudioSessionOverrideAudioRoute_Speaker;
     return hasMicphone;
 }
 
-- (void)resetCategory {
+- (void)resetCategory
+{
     if (!recording) {
         NSLog(@"Will Set category to static value = udioSessionCategoryPlayback!");
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
@@ -86,7 +90,8 @@ kAudioSessionOverrideAudioRoute_None:kAudioSessionOverrideAudioRoute_Speaker;
     }
 }
 
-- (void)resetSettings {
+- (void)resetSettings
+{
     [self resetOutputTarget];
     [self resetCategory];
     BOOL isSucced = [[AVAudioSession sharedInstance] setActive: YES error:NULL];
@@ -95,13 +100,14 @@ kAudioSessionOverrideAudioRoute_None:kAudioSessionOverrideAudioRoute_Speaker;
     }
 }
 
-- (void)cleanUpForEndRecording {
+- (void)cleanUpForEndRecording
+{
     recording = NO;
     [self resetSettings];
 }
 
-- (void)printCurrentCategory {
-    
+- (void)printCurrentCategory
+{
     return;
     
     UInt32 audioCategory = 0;
@@ -168,7 +174,8 @@ void audioRouteChangeListenerCallback (void                      *inUserData,
     [_self printCurrentCategory];
 }
 
-- (void)initSession {
+- (void)initSession
+{
     recording = NO;
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
     [self resetSettings];
@@ -187,9 +194,9 @@ void audioRouteChangeListenerCallback (void                      *inUserData,
 }
 
 //处理监听触发事件
--(void)sensorStateChange:(NSNotificationCenter *)notification;
+- (void)sensorStateChange:(NSNotificationCenter *)notification;
 {
-    //如果此时手机靠近面部放在耳朵旁，那么声音将通过听筒输出，并将屏幕变暗（省电啊）
+    // 如果此时手机靠近面部放在耳朵旁，那么声音将通过听筒输出，并将屏幕变暗
     if ([[UIDevice currentDevice] proximityState] == YES)
     {
         NSLog(@"Device is close to user");
@@ -201,5 +208,4 @@ void audioRouteChangeListenerCallback (void                      *inUserData,
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
     }
 }
-
 @end

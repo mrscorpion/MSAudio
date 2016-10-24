@@ -67,7 +67,6 @@ OSStatus RenderTone(
     
     // Store the theta back in the view controller
     vc->theta = theta;
-    
     return noErr;
 }
 
@@ -99,13 +98,6 @@ void ToneInterruptionListener(void *inClientData, UInt32 inInterruptionState)
         AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
     }
     AudioSessionSetActive(true);
-}
-
-
-- (IBAction)sliderChanged:(UISlider *)slider
-{
-    frequency = slider.value;
-    frequencyLabel.text = [NSString stringWithFormat:@"%4.1f Hz", frequency];
 }
 
 - (void)createToneUnit
@@ -162,6 +154,7 @@ void ToneInterruptionListener(void *inClientData, UInt32 inInterruptionState)
     NSAssert1(err == noErr, @"Error setting stream format: %hd", err);
 }
 
+#pragma mark - Actions
 - (IBAction)togglePlay:(UIButton *)selectedButton
 {
     if (toneUnit)
@@ -195,6 +188,12 @@ void ToneInterruptionListener(void *inClientData, UInt32 inInterruptionState)
     {
         [self togglePlay:playButton];
     }
+}
+
+- (IBAction)sliderChanged:(UISlider *)slider
+{
+    frequency = slider.value;
+    frequencyLabel.text = [NSString stringWithFormat:@"%4.1f Hz", frequency];
 }
 
 

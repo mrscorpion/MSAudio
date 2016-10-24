@@ -14,15 +14,15 @@
 @end
 
 @implementation MSAudioVC
-
+#pragma mark - View Life Cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor orangeColor];
 
-    
 //    监测耳机
-    if ([self isHeadsetPluggedIn]) {
+    if ([self isHeadsetPluggedIn])
+    {
         NSLog(@"msaudio ==> 有耳机插入");
     }
     [[AVAudioSession sharedInstance] setActive:YES error:nil];//创建单例对象并且使其设置为活跃状态.
@@ -81,7 +81,7 @@
         [self presentViewController:alertController animated:YES completion:nil];
     });
 }
-// 在dealloc的方法中都要移除所有观察者.
+// 在dealloc的方法中移除观察者
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
